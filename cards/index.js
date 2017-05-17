@@ -10,6 +10,7 @@ const PoundCard = require('./pound');
 const LuckyStrike = require('./lucky-strike');
 const HitHarderCard = require('./hit-harder');
 const RehitCard = require('./rehit');
+const DEFAULT_CARDS = 9;
 // const ReviveCard = require('./revive');
 
 const all = [
@@ -42,13 +43,22 @@ const draw = (opts) => {
 	return new Card(options);
 };
 
-const getInitialDeck = options => [
-	new HitCard(options),
-	new HitCard(options),
-	new HealCard(options),
-	new FleeCard(options),
-	draw(options)
-];
+const getInitialDeck = (options) => {
+	const deck = [
+		new HitCard(options),
+		new HitCard(options),
+		new HitCard(options),
+		new HealCard(options),
+		new HealCard(options),
+		new FleeCard(options)
+	];
+
+	while (deck.length < DEFAULT_CARDS) {
+		deck.push(draw(options));
+	}
+
+	return deck;
+};
 
 const hydrateCard = (cardObj) => {
 	const Card = all.find(({ name }) => name === cardObj.name);
@@ -64,5 +74,6 @@ module.exports = {
 	draw,
 	getInitialDeck,
 	hydrateCard,
-	hydrateDeck
+	hydrateDeck,
+	DEFAULT_CARDS
 };
