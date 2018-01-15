@@ -32,7 +32,7 @@ class HitCard extends BaseCard {
 	}
 
 	getAttackRoll (player) {
-		return roll({ primaryDice: this.attackDice, modifier: player.dexModifier, bonusDice: player.bonusAttackDice, crit: true });
+		return roll({ primaryDice: this.attackDice, modifier: player.getBonus('dex'), bonusDice: player.bonusAttackDice, crit: true });
 	}
 
 	hitCheck (player, target) {
@@ -68,7 +68,7 @@ class HitCard extends BaseCard {
 	}
 
 	getDamageRoll (player) {
-		return roll({ primaryDice: this.damageDice, modifier: player.strModifier, bonusDice: player.bonusDamageDice });
+		return roll({ primaryDice: this.damageDice, modifier: player.getBonus('str'), bonusDice: player.bonusDamageDice });
 	}
 
 	rollForDamage (player, target, strokeOfLuck) {

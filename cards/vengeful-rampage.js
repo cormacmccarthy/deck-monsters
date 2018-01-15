@@ -9,8 +9,8 @@ Damage: ${this.damageDice} +1 per wound suffered`;
 	}
 
 	getDamageRoll (player) {
-		const strModifier = Math.min(player.maxHp - player.hp, Math.max(player.strModifier * 2, 10));
-		return super.getDamageRoll({ strModifier, bonusDamageDice: player.bonusDamageDice });
+		const getBonus = prop => Math.min(player.maxHp - player.hp, Math.max(player.getBonus(prop) * 2, 10));
+		return super.getDamageRoll({ getBonus, bonusDamageDice: player.bonusDamageDice });
 	}
 }
 

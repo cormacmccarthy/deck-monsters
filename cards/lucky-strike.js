@@ -21,7 +21,7 @@ Roll twice for hit. Use the best roll.`;
 	}
 
 	getAttackRoll (player) {
-		return roll({ primaryDice: this.attackDice, modifier: player.dexModifier, bonusDice: player.bonusAttackDice, crit: true });
+		return roll({ primaryDice: this.attackDice, modifier: player.getBonus('dex'), bonusDice: player.bonusAttackDice, crit: true });
 	}
 
 	hitCheck (player, target) {

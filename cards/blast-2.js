@@ -17,7 +17,7 @@ class Blast2Card extends BlastCard {
 	}
 
 	effect (player, target) {
-		const damage = this.damage + player.intModifier;
+		const damage = this.damage + player.getBonus('int');
 		return target.hit(damage, player, this);
 	}
 }

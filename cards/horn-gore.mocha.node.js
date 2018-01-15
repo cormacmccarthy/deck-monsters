@@ -53,10 +53,10 @@ describe('./cards/horn-gore.js', () => {
 
 	it('only uses half of their damage modifier when calculating damage for a horn', () => {
 		const hornGore = new HornGoreCard();
-		const player = new Minotaur({ name: 'player' });
+		const player = new Minotaur({ name: 'player', strModifier: 4, strVariance: 8 });
 		const damageRoll = hornGore.getDamageRoll(player);
 
-		expect(damageRoll.modifier).to.deep.equal(1);
+		expect(damageRoll.modifier).to.deep.equal(2);
 	});
 
 	it('hits twice and immobilizes', () => {

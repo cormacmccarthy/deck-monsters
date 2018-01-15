@@ -35,7 +35,7 @@ class WoodenSpearCard extends HitCard {
 
 	getDamageRoll (player, target) {
 		if (target.name === this.creatureType) {
-			return roll({ primaryDice: this.damageDice, modifier: player.strModifier + this.strModifier, bonusDice: player.bonusDamageDice });
+			return roll({ primaryDice: this.damageDice, modifier: player.getBonus('str') + this.strModifier, bonusDice: player.bonusDamageDice });
 		}
 
 		return super.getDamageRoll(player, target);

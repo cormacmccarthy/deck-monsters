@@ -86,8 +86,8 @@ Attempt to pin your opponent between the branches of a forked stick.`;
 		const atkRoll = forkedStick.getAttackRoll(player, target);
 		const dmgRoll = forkedStick.getDamageRoll(player, target);
 
-		expect(atkRoll.modifier).to.equal(player.dexModifier + 2);
-		expect(dmgRoll.modifier).to.equal(player.strModifier);
+		expect(atkRoll.modifier).to.equal(player.getBonus('dex') + 2);
+		expect(dmgRoll.modifier).to.equal(player.getBonus('str'));
 	});
 
 	it('can be played against basilisk for a bonus to attack', () => {
@@ -98,8 +98,8 @@ Attempt to pin your opponent between the branches of a forked stick.`;
 		const atkRoll = forkedStick.getAttackRoll(player, target);
 		const dmgRoll = forkedStick.getDamageRoll(player, target);
 
-		expect(atkRoll.modifier).to.equal(player.dexModifier + 2);
-		expect(dmgRoll.modifier).to.equal(player.strModifier);
+		expect(atkRoll.modifier).to.equal(player.getBonus('dex') + 2);
+		expect(dmgRoll.modifier).to.equal(player.getBonus('str'));
 	});
 
 	it('can be played against minotaurs for a weakened attack', () => {
@@ -110,8 +110,8 @@ Attempt to pin your opponent between the branches of a forked stick.`;
 		const atkRoll = forkedStick.getAttackRoll(player, target);
 		const dmgRoll = forkedStick.getDamageRoll(player, target);
 
-		expect(atkRoll.modifier).to.equal(player.dexModifier - 2);
-		expect(dmgRoll.modifier).to.equal(player.strModifier);
+		expect(atkRoll.modifier).to.equal(player.getBonus('dex') - 2);
+		expect(dmgRoll.modifier).to.equal(player.getBonus('str'));
 	});
 
 	it('can be played against weeping angel with no bonus/penalty', () => {
@@ -122,8 +122,8 @@ Attempt to pin your opponent between the branches of a forked stick.`;
 		const dmgRoll = forkedStick.getDamageRoll(player, target);
 		const atkRoll = forkedStick.getAttackRoll(player, target);
 
-		expect(dmgRoll.modifier).to.equal(player.strModifier);
-		expect(atkRoll.modifier).to.equal(player.dexModifier);
+		expect(dmgRoll.modifier).to.equal(player.getBonus('str'));
+		expect(atkRoll.modifier).to.equal(player.getBonus('dex'));
 	});
 
 	it('immobilizes basilisk on hit', () => {

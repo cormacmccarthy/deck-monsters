@@ -12,10 +12,13 @@ const pause = require('../helpers/pause');
 const PRONOUNS = require('../helpers/pronouns');
 
 const BASE_AC = 5;
-const BASE_STR = 5;
-const BASE_DEX = 5;
-const BASE_INT = 5;
 const AC_VARIANCE = 2;
+const BASE_STR = 8;
+const STR_VARIANCE = 2;
+const BASE_DEX = 8;
+const DEX_VARIANCE = 2;
+const BASE_INT = 8;
+const INT_VARIANCE = 2;
 const BASE_HP = 28;
 const HP_VARIANCE = 5;
 // Do not access these directly. Get from this.getMaxModifications
@@ -28,9 +31,9 @@ const MAX_PROP_MODIFICATIONS = {
 	hp: 12
 };
 const MAX_BOOSTS = {
-	dex: 10,
-	str: 6,
-	int: 8,
+	dex: (BASE_DEX * 2) + DEX_VARIANCE,
+	str: BASE_STR + STR_VARIANCE,
+	int: BASE_INT + INT_VARIANCE,
 	hp: (BASE_HP * 2) + HP_VARIANCE,
 	ac: (BASE_AC * 2) + AC_VARIANCE
 };
@@ -41,12 +44,43 @@ class BaseCreature extends BaseClass {
 	constructor ({
 		acVariance = random(0, AC_VARIANCE),
 		hpVariance = random(0, HP_VARIANCE),
+		intVariance,
+		strVariance,
+		dexVariance,
 		gender = sample(Object.keys(PRONOUNS)),
 		DEFAULT_AC, // legacy
 		DEFAULT_HP, // legacy
 		...options
 	} = {}) {
-		super({ acVariance, hpVariance, gender, ...options });
+		let setNewVariances = false;
+
+		let adjustedIntVariance = intVariance;
+		if (intVariance === undefined) {
+			adjustedIntVariance = random(0, INT_VARIANCE) + options.intModifier;
+			setNewVariances = true;
+		}
+
+		let adjustedStrVariance = strVariance;
+		if (strVariance === undefined) {
+			adjustedStrVariance = random(0, STR_VARIANCE) + options.strModifier;
+			setNewVariances = true;
+		}
+
+		let adjustedDexVariance = dexVariance;
+		if (dexVariance === undefined) {
+			adjustedDexVariance = random(0, DEX_VARIANCE) + options.dexModifier;
+			setNewVariances = true;
+		}
+
+		super({
+			acVariance,
+			hpVariance,
+			intVariance: adjustedIntVariance,
+			strVariance: adjustedStrVariance,
+			dexVariance: adjustedDexVariance,
+			gender,
+			...options
+		});
 
 		// Clean up old AC code
 		if (DEFAULT_AC) {
@@ -59,6 +93,14 @@ class BaseCreature extends BaseClass {
 		if (DEFAULT_HP) {
 			this.setOptions({
 				hpVariance: DEFAULT_HP - 23
+			});
+		}
+
+		if (setNewVariances) {
+			this.setOptions({
+				intVariance: adjustedIntVariance,
+				strVariance: adjustedStrVariance,
+				dexVariance: adjustedDexVariance
 			});
 		}
 
@@ -111,17 +153,17 @@ Class: ${this.class}
 Level: ${this.level || this.displayLevel} | XP: ${this.xp}
 AC: ${this.ac} | HP: ${this.hp}/${this.maxHp}
 DEX: ${this.dex} | STR: ${this.str} | INT: ${this.int}${
-	this.dexModifier === 0 ? '' :
+	this.getBonus('dex') === 0 ? '' :
 		`
-${signedNumber(this.dexModifier)} to hit`
+${signedNumber(this.getBonus('dex'))} dex bonus`
 }${
-	this.strModifier === 0 ? '' :
+	this.getBonus('str') === 0 ? '' :
 		`
-${signedNumber(this.strModifier)} to damage`
+${signedNumber(this.getBonus('str'))} str bonus`
 }${
-	this.intModifier === 0 ? '' :
+	this.getBonus('int') === 0 ? '' :
 		`
-${signedNumber(this.intModifier)} to spells`
+${signedNumber(this.getBonus('int'))} int bonus`
 }`;
 	}
 
@@ -137,6 +179,10 @@ ${signedNumber(this.intModifier)} to spells`
 		if (this.options.hp === undefined) this.hp = this.maxHp;
 
 		return this.options.hp;
+	}
+
+	get hpVariance () {
+		return this.options.hpVariance + (this.constructor.hpVariance || 0);
 	}
 
 	set hp (hp) {
@@ -168,16 +214,32 @@ ${signedNumber(this.intModifier)} to spells`
 		return this.getProp('ac');
 	}
 
+	get acVariance () {
+		return this.options.acVariance + (this.constructor.acVariance || 0);
+	}
+
 	get dex () {
 		return this.getProp('dex');
+	}
+
+	get dexVariance () {
+		return this.options.dexVariance + (this.constructor.dexVariance || 0);
 	}
 
 	get str () {
 		return this.getProp('str');
 	}
 
+	get strVariance () {
+		return this.options.strVariance + (this.constructor.strVariance || 0);
+	}
+
 	get int () {
 		return this.getProp('int');
+	}
+
+	get intVariance () {
+		return this.options.intVariance + (this.constructor.intVariance || 0);
 	}
 
 	get dexModifier () {
@@ -190,6 +252,18 @@ ${signedNumber(this.intModifier)} to spells`
 
 	get intModifier () {
 		return this.getModifier('int');
+	}
+
+	getBonus (stat) {
+		const prop = this.getProp(stat);
+
+		if (prop <= 8) {
+			return prop - 8;
+		} else if (prop >= 12) {
+			return prop - 12;
+		}
+
+		return 0;
 	}
 
 	getMaxModifications (prop) {
@@ -220,18 +294,17 @@ ${signedNumber(this.intModifier)} to spells`
 
 	getPreBattlePropValue (prop) {
 		let raw;
-
 		switch (prop) {
 			case 'dex':
-				raw = BASE_DEX + this.dexModifier;
+				raw = BASE_DEX + this.dexVariance;
 				raw += Math.min(this.level, MAX_BOOSTS[prop]); // +1 to DEX per level up to the max
 				break;
 			case 'str':
-				raw = BASE_STR + this.strModifier;
+				raw = BASE_STR + this.strVariance;
 				raw += Math.min(this.level, MAX_BOOSTS[prop]); // +1 to STR per level up to the max
 				break;
 			case 'int':
-				raw = BASE_INT + this.intModifier;
+				raw = BASE_INT + this.intVariance;
 				raw += Math.min(this.level, MAX_BOOSTS[prop]); // +1 to INT per level up to the max
 				break;
 			case 'ac':
@@ -283,14 +356,6 @@ Battles won: ${this.battles.wins}`;
 
 	get pronouns () {
 		return PRONOUNS[this.options.gender];
-	}
-
-	get acVariance () {
-		return this.options.acVariance + (this.constructor.acVariance || 0);
-	}
-
-	get hpVariance () {
-		return this.options.hpVariance + (this.constructor.hpVariance || 0);
 	}
 
 	get battles () {

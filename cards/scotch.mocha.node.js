@@ -38,6 +38,7 @@ describe('./cards/scotch.js', () => {
 
 		return scotch.play(player)
 			.then((result) => {
+				console.log('result', result);
 				expect(result).to.equal(true);
 				return expect(player.hp).to.be.above(before);
 			});

@@ -63,7 +63,7 @@ Stroke of luck increases damage per hit by 1.`;
 
 	getAttackRoll (player) {
 		// once you hit the first time, you get a diminishing bonus for each subsequent hit.
-		const modifier = player.dexModifier + (this.iterations > 1) ? Math.max(player.intModifier - this.iterations, 0) : 0;
+		const modifier = player.getBonus('dex') + (this.iterations > 1) ? Math.max(player.getBonus('int') - this.iterations, 0) : 0;
 		return roll({ primaryDice: this.attackDice, modifier, bonusDice: player.bonusAttackDice, crit: true });
 	}
 

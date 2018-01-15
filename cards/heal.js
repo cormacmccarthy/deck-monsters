@@ -33,7 +33,7 @@ Possiblity of Stroke of Luck`;
 	getHealRoll (player) {
 		// Heals get weaker each time down to zero, then start back from the top
 		if (!player.encounterModifiers.healModifier || player.encounterModifiers.healModifier < 0) {
-			player.encounterModifiers.healModifier = (player.intModifier + this.modifier);
+			player.encounterModifiers.healModifier = (player.getBonus('int') + this.modifier);
 		} else {
 			player.encounterModifiers.healModifier = Math.max(player.encounterModifiers.healModifier - 1, 0);
 		}

@@ -95,7 +95,7 @@ ${target.givenName} manages to take the opportunity of such close proximity to $
 	}
 
 	getDamageRoll (player) {
-		return roll({ primaryDice: this.damageDice, modifier: (Math.floor(player.strModifier / 2)), bonusDice: player.bonusDamageDice });
+		return roll({ primaryDice: this.damageDice, modifier: (Math.floor(player.getBonus('str') / 2)), bonusDice: player.bonusDamageDice });
 	}
 
 	gore (player, target, hornNumber) {

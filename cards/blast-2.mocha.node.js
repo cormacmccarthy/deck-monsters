@@ -56,7 +56,7 @@ describe('./cards/blast-2.js', () => {
 		};
 
 		const playerStartingHp = player.hp;
-		const damage = 3 + player.intModifier;
+		const damage = 3 + player.getBonus('int');
 		const target1StartingHp = target1.hp;
 		const target2StartingHp = target2.hp;
 
@@ -88,7 +88,7 @@ describe('./cards/blast-2.js', () => {
 		];
 
 		const playerStartingHp = player.hp;
-		const damage = 3 + player.intModifier;
+		const damage = 3 + player.getBonus('int');
 		const target1StartingHp = target1.hp;
 		const target2StartingHp = target2.hp;
 
